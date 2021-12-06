@@ -1,4 +1,4 @@
-uri_parse --> uri, call(_URI).
+uri_parse --> uri, call(URI).
 
 uri --> scheme, ':', authorithy, ['/', [path], ['?', query], ['#', fragment]];
         scheme, ':', ['/'], [path], ['?', query], ['#', fragment];

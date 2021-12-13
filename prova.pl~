@@ -7,9 +7,10 @@ return_scheme([X | Xs], Y, S, R):-
 
 return_authority(['/', '/' | Xs], Y, Y, Xs).
 
-return_authority([X | Xs], Y, S, R) :-
+return_host([], Y, Y, []).
+return_host([X | Xs], Y, S, R) :-
     append(Y, [X], L),
-    return_authority(Xs, L, S, R).
+    return_host(Xs, L, S, R).
 
 
 uri(S, R) :-

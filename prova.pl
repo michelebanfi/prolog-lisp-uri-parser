@@ -1,4 +1,9 @@
 %%prova DCG
+ur
+
+uri(S, I, H, Port, Path,  Q, F) :-
+
+
 return_scheme([':' | Xs], Y, Y, Xs).
 
 return_scheme([X | Xs], Y, S, R):-
@@ -8,6 +13,9 @@ return_scheme([X | Xs], Y, S, R):-
 return_authority(['/', '/' | Xs], Y, Y, Xs).
 
 return_host([], Y, Y, []).
+return_host(['@' | Xs], Y, Y, Xs) :-
+    return_userinfo(Y).
+
 return_host([X | Xs], Y, S, R) :-
     append(Y, [X], L),
     return_host(Xs, L, S, R).

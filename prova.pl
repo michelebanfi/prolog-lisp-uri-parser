@@ -1,14 +1,17 @@
-%%prova DCG
+%% prova DCG
+
+
+%% scheme parser
 return_scheme([':' | _Xs], Y, Y).
 
 return_scheme([X | Xs], Y, R):-
-    append(Y, [X], L),
-    return_scheme(Xs, L, R).
+    append(Y, [X], L),  %% concatena a Y X e lo mette in L
+    return_scheme(Xs, L, R). %% ritorna la testa concatenata
 
 uri(S, R) :-
-    atom_chars(S, L),
-    phrase(scheme(L), R).
-    %phrase(authority(Rests), Rests , R).
+    atom_chars(S, L), %% stringa in lista
+    phrase(scheme(L), R). %% prhase una dcg e una lista 
+    %% phrase(authority(Rests), Rests , R).
 
 %% Grammatica scheme
 

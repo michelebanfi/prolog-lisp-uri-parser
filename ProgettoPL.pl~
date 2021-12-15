@@ -46,7 +46,13 @@ uri_parse(UriString):-
     return_authority_path(L2, [], Authority, Path),
     return_userinfo(Authority, [], Userinfo, R4),
     return_host_port(R4, [], Port, Host),
-    phrase(scheme(Scheme), Scheme).
+    phrase(scheme(Scheme), Scheme),
+    phrase(scheme(Userinfo), Userinfo),
+    phrase(scheme(Host), Host),
+    phrase(scheme(Port), Port),
+    phrase(scheme(Path), Path),
+    phrase(scheme(Query), Query),
+    phrase(scheme(Fragment), Fragment).
 
 scheme(C) --> identificatori(C).
 

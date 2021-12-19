@@ -1,6 +1,7 @@
 %%prova DCG
 atom_list([], []).
-atom_list([X | Xs], R):- atom_string([X | Xs], R).
+atom_list([X | Xs], R):- 
+    atom_string([X | Xs], R).
                          %atomic_list_concat([X | Xs], R)
 
 return_scheme([':', '/', '/' | Xs], Y, Y, Xs) :- !.
@@ -39,6 +40,33 @@ return_host_port([X | Xs], Y, S, R):-
     append(Y, [X], L),
     return_host_port(Xs, L, S, R).
 
+host_fixer([], Y, Temp,  _Temp2, R) :-
+    atom_list(Y, Res),
+    append(Temp, [Res], R).
+
+host_fixer(['.' | Xs] , Y, Temp, Temp2, R):-
+    atom_list(Y, Res),
+    append([Res], ['.'], Rap),
+    append(Temp, Rap, Temp2),
+    host_fixer(Xs, [], Temp2, _Temp, R), !.
+
+host_fixer([X | Xs], Y , Temp, Temp2, R):-
+    append(Y, [X], L),
+    host_fixer(Xs, L, Temp, Temp2 ,R),!.
+
+path_fixer([], Y, Temp,  _Temp2, R) :-
+    atom_list(Y, Res),
+    append(Temp, [Res], R).
+
+path_fixer(['/' | Xs] , Y, Temp, Temp2, R):-
+    atom_list(Y, Res),
+    append([Res], ['/'], Rap),
+    append(Temp, Rap, Temp2),
+    path_fixer(Xs, [], Temp2, _Temp, R), !.
+
+path_fixer([X | Xs], Y , Temp, Temp2, R):-
+    append(Y, [X], L),
+    path_fixer(Xs, L, Temp, Temp2 ,R),!.
 
 uri_parse(UriString,
           uri(S, U, H, Po, Pa, Q, F)):-
@@ -51,7 +79,9 @@ uri_parse(UriString,
     return_authority_path(L2, [], Authority, Path),
     return_userinfo(Authority, [], Userinfo, R4),
     return_host_port(R4, [], Port, Host),
-    %uri(Scheme, Userinfo, Host, Port, Path, Query, Fragment),
+    host_fixer(Host, [], _Temp0, _Temp1, L3),
+    path_fixer(Path, [], _Temp2, _Temp3, L4),
+    uri(Scheme, Userinfo, L3, Port, L4, Query, Fragment),
     atom_list(Scheme, S),
     atom_list(Userinfo, U),
     atom_list(Host, H),
@@ -61,14 +91,14 @@ uri_parse(UriString,
     atom_list(Fragment, F).
 
 
-
 uri(Scheme, Userinfo, Host, Port, Path, Query, Fragment):-
     %modificare grammatica Host
     phrase(scheme(Scheme), Scheme),
     phrase(userinfo(Userinfo), Userinfo),
-    phrase(host(Host), Host),
+%phrase(host([disco, [.], unimib, [.], it]), Host),
+    phrase(host, Host),
     phrase(port(Port), Port),
-    phrase(path(Path), Path),
+    phrase(path, Path),
     phrase(query(Query), Query),
     phrase(fragment(Fragment), Fragment).
 
@@ -85,18 +115,33 @@ id(C) --> [C],
      C \= '@',
      C \= ':'}.
 
+host --> id_host.
+host --> id_host, host.
+host --> id_host, ['.'], host.
 
-host(C) --> identificatore_host(C).
+path --> id_path.
+path --> id_path, path.
+path --> id_path, [/], path.
 
-identificatore_host([]) --> [].
-identificatore_host([C | T]) --> id_host(C), identificatore_host(T).
-id_host(C) --> [C],
+%identificatore_host([]) --> [].
+%identificatore_host([C | T]) --> id_host(C), ['.'], identificatore_host(T).
+id_host --> [C],
     {C \= '/',
      C \= '.',
      C \= '?',
      C \= '#',
      C \= '@',
+     C \= [],
      C \= ':'}.
+     
+id_path --> [C],
+    {C \= '/',
+     C \= '?',
+     C \= '#',
+     C \= '@',
+     C \= [],
+     C \= ':'}.
+
 
 port([]) --> [].
 port([C | T]) --> digit(C), port(T).
@@ -112,8 +157,6 @@ digit(C)-->[C], {C = '7'}.
 digit(C)-->[C], {C = '8'}.
 digit(C)-->[C], {C = '9'}.
 
-path([]) --> [].
-path([C | T]) --> id(C), path(T). %Sbagliato correggere
 
 
 query([]) --> [].

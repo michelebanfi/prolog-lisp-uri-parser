@@ -81,7 +81,7 @@ uri_parse(UriString,
     return_host_port(R4, [], Port, Host),
     host_fixer(Host, [], _Temp0, _Temp1, L3),
     path_fixer(Path, [], _Temp2, _Temp3, L4),
-    uri(Scheme, Userinfo, L3, Port, L4, Query, Fragment),
+    %uri(Scheme, Userinfo, L3, Port, L4, Query, Fragment),
     atom_list(Scheme, S),
     atom_list(Userinfo, U),
     atom_list(Host, H),
@@ -92,15 +92,32 @@ uri_parse(UriString,
 
 
 uri(Scheme, Userinfo, Host, Port, Path, Query, Fragment):-
-    %modificare grammatica Host
     phrase(scheme(Scheme), Scheme),
     phrase(userinfo(Userinfo), Userinfo),
-%phrase(host([disco, [.], unimib, [.], it]), Host),
     phrase(host, Host),
     phrase(port(Port), Port),
     phrase(path, Path),
     phrase(query(Query), Query),
     phrase(fragment(Fragment), Fragment).
+
+uri_display(uri(S, U, H, Po, Pa, Q, F)):- 
+    write("Scheme": S),
+    write("\nUserinfo": U),
+    write("\nHost": H),
+    write("\nPort": Po),
+    write("\nPath": Pa),
+    write("\nQuery": Q),
+    write("\nFragment": F).
+
+uri_display(uri(S, U, H, Po, Pa, Q, F), Stream):- 
+    write(Stream,"Scheme": S),
+    write(Stream,"\nUserinfo": U),
+    write(Stream,"\nHost": H),
+    write(Stream,"\nPort": Po),
+    write(Stream,"\nPath": Pa),
+    write(Stream,"\nQuery": Q),
+    write(Stream,"\nFragment": F),
+    close(Stream).
 
 scheme(C) --> identificatori(C).
 

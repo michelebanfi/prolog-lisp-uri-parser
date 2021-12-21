@@ -1,7 +1,8 @@
 %%prova DCG
+
 atom_list([], []).
-atom_list([X | Xs], R):- 
-    atom_string([X | Xs], R).
+atom_list([X | Xs], R):-
+    atomic_list_concat([X | Xs], R).
                          %atomic_list_concat([X | Xs], R)
 
 return_scheme([':', '/', '/' | Xs], Y, Y, Xs) :- !.
@@ -34,7 +35,7 @@ return_userinfo([X | Xs], Y, S, R):-
     append(Y, [X], L),
     return_userinfo(Xs, L, S, R).
 
-return_host_port([], Y, [], Y) :- !.
+return_host_port([], Y, ['8', '0'], Y) :- !.
 return_host_port([':'| Xs], Y, Xs, Y) :- !.
 return_host_port([X | Xs], Y, S, R):-
     append(Y, [X], L),
@@ -56,7 +57,7 @@ host_fixer([X | Xs], Y , Temp, Temp2, R):-
 
 path_fixer([], Y, Temp,  _Temp2, R) :-
     atom_list(Y, Res),
-    append(Temp, [Res], R).
+    append(Temp, [Res], R), !.
 
 path_fixer(['/' | Xs] , Y, Temp, Temp2, R):-
     atom_list(Y, Res),
@@ -79,9 +80,7 @@ uri_parse(UriString,
     return_authority_path(L2, [], Authority, Path),
     return_userinfo(Authority, [], Userinfo, R4),
     return_host_port(R4, [], Port, Host),
-    host_fixer(Host, [], _Temp0, _Temp1, L3),
-    path_fixer(Path, [], _Temp2, _Temp3, L4),
-    %uri(Scheme, Userinfo, L3, Port, L4, Query, Fragment),
+    uri(Scheme, Userinfo, Host, Port, Path, Query, Fragment),
     atom_list(Scheme, S),
     atom_list(Userinfo, U),
     atom_list(Host, H),
@@ -96,11 +95,11 @@ uri(Scheme, Userinfo, Host, Port, Path, Query, Fragment):-
     phrase(userinfo(Userinfo), Userinfo),
     phrase(host, Host),
     phrase(port(Port), Port),
-    phrase(path, Path),
+    phrase(path, [s]),
     phrase(query(Query), Query),
     phrase(fragment(Fragment), Fragment).
 
-uri_display(uri(S, U, H, Po, Pa, Q, F)):- 
+uri_display(uri(S, U, H, Po, Pa, Q, F)):-
     write("Scheme": S),
     write("\nUserinfo": U),
     write("\nHost": H),
@@ -109,7 +108,7 @@ uri_display(uri(S, U, H, Po, Pa, Q, F)):-
     write("\nQuery": Q),
     write("\nFragment": F).
 
-uri_display(uri(S, U, H, Po, Pa, Q, F), Stream):- 
+uri_display(uri(S, U, H, Po, Pa, Q, F), Stream):-
     write(Stream,"Scheme": S),
     write(Stream,"\nUserinfo": U),
     write(Stream,"\nHost": H),
@@ -118,6 +117,7 @@ uri_display(uri(S, U, H, Po, Pa, Q, F), Stream):-
     write(Stream,"\nQuery": Q),
     write(Stream,"\nFragment": F),
     close(Stream).
+
 
 scheme(C) --> identificatori(C).
 
@@ -150,7 +150,7 @@ id_host --> [C],
      C \= '@',
      C \= [],
      C \= ':'}.
-     
+
 id_path --> [C],
     {C \= '/',
      C \= '?',

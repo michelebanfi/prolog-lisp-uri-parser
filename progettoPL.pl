@@ -168,6 +168,32 @@ mailto_host --> [].
 host --> id_host, host.
 host --> id_host, ['.'], host.
 host --> id_host.
+host --> indirizzo_ip.
+
+indirizzo_ip --> number, ['.'], number, ['.'],
+    number, ['.'], number, !.
+
+number --> [D0],
+    {phrase(digit , [D0]),
+     atom_list([D0], X),
+     atom_number(X, Y),
+     Y > 0,
+     Y < 255}.
+number --> [D0, D1],
+    {phrase(digit , [D0]),
+     phrase(digit , [D1]),
+     atom_list([D0, D1], X),
+     atom_number(X, Y),
+     Y > 0,
+     Y < 255}.
+number --> [D0, D1, D2],
+    {phrase(digit , [D0]),
+     phrase(digit , [D1]),
+     phrase(digit , [D2]),
+     atom_list([D0, D1, D2], X),
+     atom_number(X, Y),
+     Y >= 0,
+     Y =< 255}.
 
 path --> id_path, [/], path.
 path --> id_path, path.
@@ -175,7 +201,8 @@ path --> id_path.
 path --> [], !.
 
 id_host --> [C],
-    {C \= '/',
+    {code_type(C, alpha),
+     C \= '/',
      C \= '.',
      C \= '?',
      C \= '#',

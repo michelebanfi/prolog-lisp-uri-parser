@@ -91,6 +91,30 @@ scheme_syntax([f, a, x], Uri,
     phrase(userinfo, Uri), !,
     atom_list(Uri, Userinfo).
 
+scheme_syntax([z, o, s], Uri, %davvero necessario?
+              Userinfo, Host, Port, Path, Query, Fragment):-
+    !, Uri \= ['/'], %chiarire
+    reverse(Uri, L1),
+    return_fragment(L1, [], F, R2),
+    F \= ['#'],
+    return_query(R2, [], Q, R3),
+    Q \= ['?'],
+    return_authority_path(R3, [], Au, Pa),
+    return_userinfo(Au, [], U, R4),
+    return_host_port(R4, [], Po, H),
+    Po \=[],
+    phrase(authority, Au), !,
+    phrase(zos_path, Pa), !,
+    phrase(query, Q), !,
+    phrase(fragment, F),
+    fix(F, F1), fix(Q, Q1),
+    atom_list(U, Userinfo),
+    atom_list(H, Host),
+    atom_list(Po, Port),
+    atom_list(Pa, Path),
+    atom_list(Q1, Query),
+    atom_list(F1, Fragment), !.
+
 scheme_syntax(Scheme, Uri,
               Userinfo, Host, Port, Path, Query, Fragment):-
     reverse(Uri, L1),
@@ -194,6 +218,14 @@ number --> [D0, D1, D2],
      atom_number(X, Y),
      Y >= 0,
      Y =< 255}.
+
+zos_path --> id44, zos_path.
+zos_path --> id44, ['('], id8.
+zos_path --> [].
+id44 --> [C], {code_type(C, alpha)}.
+id44 --> ['.'].
+id8 --> [C], {code_type(C, alpha)}, id8.
+id8 --> [C], {code_type(C, alpha)}, [')'].
 
 path --> id_path, [/], path.
 path --> id_path, path.

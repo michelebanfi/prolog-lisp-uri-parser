@@ -1,8 +1,8 @@
 %%%% -*- Mode: Prolog -*-
 %%%% uri-parse.pl --
 
-fix([], []).
-fix([_X | Xs], Xs).
+boia([], []).
+boia([_X | Xs], Xs).
 
 %syntax URI1
 return_scheme([':'| Xs], Y, Y, Xs) :- !.
@@ -24,10 +24,10 @@ return_query([X | Xs], Y, S, R):-
     append([X], Y, L),
     return_query(Xs, L, S, R).
 
-return_authority_path([], Y, Y, []) :- !.
+return_authority_path([], Y, Y, []) :- !. %chiarire
 return_authority_path(['/', '/'| Au], Y, ['/', '/'| S], R):-
     return_authority_path(Au, Y, S, R).
-return_authority_path(['/' | Au], Y, Y, Au) :- !.
+return_authority_path(['/' | P], Y, Y, ['/' | P]) :- !.
 return_authority_path([X | Xs], Y, S, R):-
     append(Y, [X], L),
     return_authority_path(Xs, L, S, R).
@@ -58,7 +58,8 @@ return_mailto_userhost([X | Xs], Y, Userinfo, Host):-
 
 uri_parse(UriString,
           uri(Scheme, U, H, Po, Pa, Q, F)):-
-    atom_chars(UriString, X),
+    string_lower(UriString, Urilower),
+    atom_chars(Urilower, X),
     return_scheme(X, [], S, Resturi),
     S \= [],
     scheme_syntax(S, Resturi, U, H, Po, Pa, Q, F),
@@ -70,7 +71,7 @@ scheme_syntax([m ,a ,i ,l ,t ,o], Uri,
     H \= ['@'],
     phrase(userinfo, U), !,
     phrase(mailto_host, H), !,
-    fix(H, H1),
+    boia(H, H1),
     atom_list(U, Userinfo),
     atom_list(H1, Host).
 
@@ -82,8 +83,7 @@ scheme_syntax([n, e, w, s], Uri,
 
 scheme_syntax([t, e, l], Uri,
              Userinfo, [], [], [], [], []):-
-    !,
-    phrase(userinfo, Uri),
+    phrase(userinfo, Uri), !,
     atom_list(Uri, Userinfo).
 
 scheme_syntax([f, a, x], Uri,
@@ -93,25 +93,26 @@ scheme_syntax([f, a, x], Uri,
 
 scheme_syntax([z, o, s], Uri,
               Userinfo, Host, Port, Path, Query, Fragment):-
-    !, Uri \= ['/'], %chiarire
     reverse(Uri, L1),
     return_fragment(L1, [], F, R2),
     F \= ['#'],
     return_query(R2, [], Q, R3),
     Q \= ['?'],
     return_authority_path(R3, [], Au, Pa),
+    Pa \= ['/'],
+    boia(Pa, Pa1),
     return_userinfo(Au, [], U, R4),
     return_host_port(R4, [], Po, H),
-    Po \=[],
+    Po \= [],
     phrase(authority, Au), !,
-    phrase(zos_path, Pa), !,
+    phrase(zos_path, Pa1), !,
     phrase(query, Q), !,
     phrase(fragment, F),
-    fix(F, F1), fix(Q, Q1),
+    boia(F, F1), boia(Q, Q1),
     atom_list(U, Userinfo),
     atom_list(H, Host),
     atom_list(Po, Port),
-    atom_list(Pa, Path),
+    atom_list(Pa1, Path),
     atom_list(Q1, Query),
     atom_list(F1, Fragment), !.
 
@@ -123,15 +124,17 @@ scheme_syntax(Scheme, Uri,
     return_query(R2, [], Q, R3),
     Q \= ['?'],
     return_authority_path(R3, [], Au, Pa),
+    Pa \= ['/'],
+    boia(Pa, Pa1),
     return_userinfo(Au, [], U, R4),
     return_host_port(R4, [], Po, H),
-    Po \=[],
-    uri(Scheme, Au, Pa, Q, F),
-    fix(F, F1), fix(Q, Q1),
+    Po \= [],
+    uri(Scheme, Au, Pa1, Q, F),
+    boia(F, F1), boia(Q, Q1),
     atom_list(U, Userinfo),
     atom_list(H, Host),
     atom_list(Po, Port),
-    atom_list(Pa, Path),
+    atom_list(Pa1, Path),
     atom_list(Q1, Query),
     atom_list(F1, Fragment), !.
 
@@ -233,8 +236,7 @@ path --> id_path.
 path --> [], !.
 
 id_host --> [C],
-    {code_type(C, alpha),
-     C \= '/',
+    {C \= '/',
      C \= '.',
      C \= '?',
      C \= '#',

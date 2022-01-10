@@ -11,7 +11,8 @@
 )
 (defun dialler (x)
   (cond ((equal (first x) "mailto")(mailto x))
-        ((equal (first x) "news")(news x))
+        
+((equal (first x) "news")(news x))
         ((equal (first x) "tel")(telfax x))
         ((equal (first x) "fax")(telfax x))
         (T (scheme-grammar (coerce (first x) 'list) x) )

@@ -1,10 +1,22 @@
 %%%% -*- Mode: Prolog -*-
+
+%%%% Emanuele Masiero 872695 Michele Banfi _ _ _ _
+
 %%%% uri-parse.pl --
+
+uri_parse(UriString,
+          uri(Scheme, U, H, Po, Pa, Q, F)):-
+    string_lower(UriString, Urilower),
+    atom_chars(Urilower, X),
+    return_scheme(X, [], S, Resturi),
+    S \= [],
+    scheme_syntax(S, Resturi, U, H, Po, Pa, Q, F),
+    atom_list(S, Scheme).
 
 boia([], []).
 boia([_X | Xs], Xs).
 
-%syntax URI1
+%syntax URI1 parsing
 return_scheme([':'| Xs], Y, Y, Xs) :- !.
 return_scheme([X | Xs], Y, S, R):-
     append(Y, [X], L),
@@ -24,8 +36,8 @@ return_query([X | Xs], Y, S, R):-
     append([X], Y, L),
     return_query(Xs, L, S, R).
 
-return_authority_path([], Y, Y, []) :- !. %chiarire
-return_authority_path(['/', '/'| Au], Y, ['/', '/'| S], R):-
+return_authority_path([], Y, Y, []) :- !.
+return_authority_path(['/', '/' | Au], Y, ['/', '/' | S], R):-
     return_authority_path(Au, Y, S, R).
 return_authority_path(['/' | P], Y, Y, ['/' | P]) :- !.
 return_authority_path([X | Xs], Y, S, R):-
@@ -33,17 +45,17 @@ return_authority_path([X | Xs], Y, S, R):-
     return_authority_path(Xs, L, S, R).
 
 return_userinfo([], Y, [], Y) :- !.
-return_userinfo(['/', '/'| Xs], Y, S, R):-
+return_userinfo(['/', '/' | Xs], Y, S, R):-
     return_userinfo(Xs, Y, S, R).
-return_userinfo(['@'| Xs], Y, Y, Xs) :- !.
+return_userinfo(['@' | Xs], Y, Y, Xs) :- !.
 return_userinfo([X | Xs], Y, S, R):-
     append(Y, [X], L),
     return_userinfo(Xs, L, S, R).
 
 return_host_port([], Y, ['8', '0'], Y) :- !.
-return_host_port(['/', '/'| Xs], Y, S, R):-
+return_host_port(['/', '/' | Xs], Y, S, R):-
     return_host_port(Xs, Y, S, R).
-return_host_port([':'| Xs], Y, Xs, Y) :- !.
+return_host_port([':' | Xs], Y, Xs, Y) :- !.
 return_host_port([X | Xs], Y, S, R):-
     append(Y, [X], L),
     return_host_port(Xs, L, S, R).
@@ -54,16 +66,6 @@ return_mailto_userhost(['@' | Host], U, U, ['@' | Host]).
 return_mailto_userhost([X | Xs], Y, Userinfo, Host):-
     append(Y, [X], L),
     return_mailto_userhost(Xs, L, Userinfo, Host).
-
-
-uri_parse(UriString,
-          uri(Scheme, U, H, Po, Pa, Q, F)):-
-    string_lower(UriString, Urilower),
-    atom_chars(Urilower, X),
-    return_scheme(X, [], S, Resturi),
-    S \= [],
-    scheme_syntax(S, Resturi, U, H, Po, Pa, Q, F),
-    atom_list(S, Scheme).
 
 scheme_syntax([m ,a ,i ,l ,t ,o], Uri,
               Userinfo, Host, [], [], [], []):-
@@ -82,12 +84,12 @@ scheme_syntax([n, e, w, s], Uri,
     atom_list(Uri, Host).
 
 scheme_syntax([t, e, l], Uri,
-             Userinfo, [], [], [], [], []):-
+              Userinfo, [], [], [], [], []):-
     phrase(userinfo, Uri), !,
     atom_list(Uri, Userinfo).
 
 scheme_syntax([f, a, x], Uri,
-             Userinfo, [], [], [], [], []):-
+              Userinfo, [], [], [], [], []):-
     phrase(userinfo, Uri), !,
     atom_list(Uri, Userinfo).
 
@@ -124,13 +126,12 @@ scheme_syntax(Scheme, Uri,
     return_query(R2, [], Q, R3),
     Q \= ['?'],
     return_authority_path(R3, [], Au, Pa),
-    Pa \= ['/'],
-    boia(Pa, Pa1),
     return_userinfo(Au, [], U, R4),
     return_host_port(R4, [], Po, H),
     Po \= [],
-    uri(Scheme, Au, Pa1, Q, F),
-    boia(F, F1), boia(Q, Q1),
+    !,
+    uri_grammar(Scheme, Au, Pa, Q, F),
+    boia(F, F1), boia(Q, Q1), boia(Pa, Pa1),
     atom_list(U, Userinfo),
     atom_list(H, Host),
     atom_list(Po, Port),
@@ -138,10 +139,10 @@ scheme_syntax(Scheme, Uri,
     atom_list(Q1, Query),
     atom_list(F1, Fragment), !.
 
-uri(Scheme, Authority, Path, Query, Fragment):-
+uri_grammar(Scheme, Authority, Path, Query, Fragment):-
     phrase(scheme, Scheme),
     phrase(authority, Authority),
-    phrase(path, Path),
+    phrase(path_structure, Path),
     phrase(query, Query),
     phrase(fragment, Fragment), !.
 
@@ -165,7 +166,7 @@ uri_display(uri(S, U, H, Po, Pa, Q, F), Stream):-
     close(Stream).
 
 
-%DCG
+%DCG Grammar
 scheme --> identificatori.
 
 userinfo --> identificatori.
@@ -176,7 +177,7 @@ authority --> [/, /], userinfo, ['@'], host.
 authority --> [/, /], host.
 authority --> [], !.
 
-identificatori -->[].
+identificatori --> [].
 identificatori --> id, identificatori.
 
 id --> [C],
@@ -230,10 +231,11 @@ id44 --> ['.'].
 id8 --> [C], {code_type(C, alpha)}, id8.
 id8 --> [C], {code_type(C, alpha)}, [')'].
 
+path_structure --> [/], path.
+path_structure --> [], !.
 path --> id_path, [/], path.
 path --> id_path, path.
 path --> id_path.
-
 
 id_host --> [C],
     {C \= '/',
@@ -264,7 +266,6 @@ digit-->[C], {C = '7'}, !.
 digit-->[C], {C = '8'}, !.
 digit-->[C], {C = '9'}, !.
 
-
 query --> ['?'], query.
 query --> [C],{C \= '#'}, query.
 query --> [], !.
@@ -278,4 +279,19 @@ atom_list([X | Xs], R):-
     atomic_list_concat([X | Xs], R).
 
 %%%% end of file -- uri-parse.pl --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

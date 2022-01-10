@@ -24,8 +24,9 @@
         ((equal (third x) "") (error "illegal query")) ;query
         ((equal (fourth x) "") (error "illegal path")) ;path
         ((equal (sixth x) "") (error "illegal port")) ;port
-        ((equal (seventh x) "") (error "illegal host")) ;host
-        ((equal (last (coerce (fourth x) 'list))'(#\/))(error "illegal end of path with '/'")) ;path that end with /
+        ;((equal (seventh x) "") (error "illegal host")) ;host
+        ((equal (last (coerce (fourth x) 'list))'(#\/))
+         (error "illegal end of path with '/'")) ;path that end with /
         (T (dialler x))
         )
   )
@@ -170,12 +171,18 @@
             ((equal y '(#\x #\a #\f))(return_fragment (reverse-list (cdr x)) 
                        NIL 
                        (cons (format nil "~{~A~}" (reverse-list y )) '())))
-            (T (return_fragment (reverse-list (cdr (cdr (cdr x)))) 
-                       NIL 
-                       (cons (format nil "~{~A~}" (reverse-list y )) '())))
-      )
+            (T (return_fragment (reverse-list (scheme_fixer x)) 
+                                NIL 
+                                (cons (format nil "~{~A~}" (reverse-list y )) '())))
+            )
     (return_scheme (cdr x) (cons (car x) y)))
 )
+(defun scheme_fixer(x)
+  (cond ((and (equal (third x) #\/) (null (fourth x))) (error "bad host"))
+        ((and (equal (second x) #\/) (null (third x))) (error "bad host"))
+        (T (cdr (cdr (cdr x))))
+        )
+  )
 
 (defun return_fragment (x y z)
   (cond ((null x) (return_query y NIL (cons z "NIL" )))
@@ -196,7 +203,7 @@
                               NIL
                               (cons z (format nil "~{~A~}" (cdr x)))))
       (T (return_query (cdr x) (cons (car x) y) z)))
-)
+) 
 
 
 (defun return_authority_path (x y z)

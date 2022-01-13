@@ -25,7 +25,6 @@
         ((equal (third x) "") (error "illegal query")) ;query
         ((equal (fourth x) "") (error "illegal path")) ;path
         ((equal (sixth x) "") (error "illegal port")) ;port
-	;((equal (seventh x) "") (error "illegal host")) ;host
         ((equal (last (coerce (fourth x) 'list))'(#\/))
          (error "illegal end of path with '/'")) ;path that end with /
         (T (dialler x))
@@ -216,10 +215,12 @@
             ((equal y '(#\x #\a #\f))
 	     (return_fragment (reverse-list (cdr x)) 
 			      NIL 
-			      (cons (format nil "~{~A~}" (reverse-list y )) '())))
+			      (cons (format nil "~{~A~}" 
+                                            (reverse-list y )) '())))
             (T (return_fragment (reverse-list (scheme_fixer x)) 
                                 NIL 
-                                (cons (format nil "~{~A~}" (reverse-list y )) '())))
+                                (cons (format nil "~{~A~}" 
+                                              (reverse-list y )) '())))
             )
     (return_scheme (cdr x) (cons (car x) y)))
   )

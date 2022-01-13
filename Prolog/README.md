@@ -48,7 +48,7 @@ Port:8080
 Path:folder/b
 Query:search=ciao
 Fragment:frag
-URI = uri("https", "michele", "disco.unimib", "8080", "folder/b", "search=ciao", "frag").
+URI = uri(https, michele, 'disco.unimib', '8080', 'folder/b', 'search=ciao', frag).
 ```
 
 invece con `uri_display/2` si puó stampare su file cosi:
@@ -57,5 +57,5 @@ invece con `uri_display/2` si puó stampare su file cosi:
 ?- open('otuput.txt', write, Stream), uri_parse("https://michele@disco.unimib:8080/folder/b?search=ciao#frag", URI), uri_display(URI, Stream).
 
 Stream = <stream>(0x6000037e9400),
-URI = uri("https", "michele", "disco.unimib", "8080", "folder/b", "search=ciao", "frag").
+URI = uri(https, michele, 'disco.unimib', '8080', 'folder/b', 'search=ciao', frag).
 ```

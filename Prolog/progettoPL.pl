@@ -1,6 +1,6 @@
 %%%% -*- Mode: Prolog -*-
 
-%%%% Emanuele Masiero 872695 Michele Banfi _ _ _ _
+%%%% Masiero Emanuele 872695 - Banfi Michele 869294
 
 %%%% uri-parse.pl --
 
@@ -78,7 +78,7 @@ scheme_syntax([m ,a ,i ,l ,t ,o], Uri,
     atom_list(H1, Host).
 
 scheme_syntax([n, e, w, s], Uri,
-             [], Host, [], [], [], []):-
+              [], Host, [], [], [], []):-
     !,
     phrase(news_host, Uri),
     atom_list(Uri, Host).
@@ -181,11 +181,11 @@ identificatori --> [].
 identificatori --> id, identificatori.
 
 id --> [C],
-    {C \= '/',
-     C \= '?',
-     C \= '#',
-     C \= '@',
-     C \= ':'}, !.
+       {C \= '/',
+	C \= '?',
+	C \= '#',
+	C \= '@',
+	C \= ':'}, !.
 
 news_host --> host, !.
 news_host --> [].
@@ -199,29 +199,29 @@ host --> id_host.
 host --> indirizzo_ip.
 
 indirizzo_ip --> number, ['.'], number, ['.'],
-    number, ['.'], number, !.
+		 number, ['.'], number, !.
 
 number --> [D0],
-    {phrase(digit , [D0]),
-     atom_list([D0], X),
-     atom_number(X, Y),
-     Y > 0,
-     Y < 255}.
+	   {phrase(digit , [D0]),
+	    atom_list([D0], X),
+	    atom_number(X, Y),
+	    Y > 0,
+	    Y < 255}.
 number --> [D0, D1],
-    {phrase(digit , [D0]),
-     phrase(digit , [D1]),
-     atom_list([D0, D1], X),
-     atom_number(X, Y),
-     Y > 0,
-     Y < 255}.
+	   {phrase(digit , [D0]),
+	    phrase(digit , [D1]),
+	    atom_list([D0, D1], X),
+	    atom_number(X, Y),
+	    Y > 0,
+	    Y < 255}.
 number --> [D0, D1, D2],
-    {phrase(digit , [D0]),
-     phrase(digit , [D1]),
-     phrase(digit , [D2]),
-     atom_list([D0, D1, D2], X),
-     atom_number(X, Y),
-     Y >= 0,
-     Y =< 255}.
+	   {phrase(digit , [D0]),
+	    phrase(digit , [D1]),
+	    phrase(digit , [D2]),
+	    atom_list([D0, D1, D2], X),
+	    atom_number(X, Y),
+	    Y >= 0,
+	    Y =< 255}.
 
 zos_path --> id44, zos_path.
 zos_path --> id44, ['('], id8.
@@ -238,19 +238,19 @@ path --> id_path, path.
 path --> id_path.
 
 id_host --> [C],
-    {C \= '/',
-     C \= '.',
-     C \= '?',
-     C \= '#',
-     C \= '@',
-     C \= ':'}, !.
+	    {C \= '/',
+	     C \= '.',
+	     C \= '?',
+	     C \= '#',
+	     C \= '@',
+	     C \= ':'}, !.
 
 id_path --> [C],
-    {C \= '/',
-     C \= '?',
-     C \= '#',
-     C \= '@',
-     C \= ':'}, !.
+	    {C \= '/',
+	     C \= '?',
+	     C \= '#',
+	     C \= '@',
+	     C \= ':'}, !.
 
 port --> digit, port.
 port --> [].

@@ -103,7 +103,6 @@
         ((null query) (path-grammar (coerce (fourth uri) 'list)  uri))
         ( (equal (car query) #\#) (error "illegal uri-query char"))
         (T (query-grammar (cdr query) uri)))
-
   )
 
 (defun zos-path-grammar (path y uri)

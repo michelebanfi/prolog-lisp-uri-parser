@@ -302,8 +302,8 @@ query --> ['?'], query.
 query --> [C],{C \= '#'}, query.
 query --> [], !.
 
-fragment -->['#'], fragment.
-fragment -->[C],{code_type(C, alnum)}, fragment.
+fragment --> ['#'], fragment.
+fragment --> [C],{code_type(C, alnum)}, fragment.
 fragment --> [], !.
 
 atom_list([], []).

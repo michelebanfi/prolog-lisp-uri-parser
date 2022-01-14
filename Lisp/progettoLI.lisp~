@@ -153,7 +153,7 @@
         ( (and (equal (car path) #\/) (equal (car path) (car (cdr path)) )) 
           (error "illegal uri-path char sequence //"))
         (T (path-grammar (cdr path) uri))
-        )
+  )
   )
 
 (defun userinfo-grammar (userinfo uri)
@@ -170,7 +170,7 @@
         ( (equal (car userinfo) #\:)  
           (error "illegal uri-userinfo char found :"))
         (T (userinfo-grammar (cdr userinfo) uri))
-        )
+  )
   )
 
 (defun host-grammar (host uri)

@@ -348,7 +348,6 @@
       nil
     (cons-end (car l) (reverse-list (rest l)))))
 
-
 (defun flatten (x)
   (cond ((null x) x)
         ((atom x) (list x))

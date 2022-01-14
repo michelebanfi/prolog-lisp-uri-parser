@@ -157,9 +157,9 @@ zos_length_id44([_X | Rest], Lid44, Id8) :-
     zos_length_id44(Rest, L, Id8),
     Lid44 is L + 1.
 
-zos_length_id8([')'], 0).
+zos_lenght_id8([')'], 0).
 zos_length_id8([_X | Rest], Lid8) :-
-    zos_length_id8(Rest, L),
+    zos_lenght_id8(Rest, L),
     Lid8 is L + 1.
 
 uri_grammar(Scheme, Authority, Path, Query, Fragment):-

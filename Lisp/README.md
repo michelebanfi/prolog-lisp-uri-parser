@@ -1,6 +1,6 @@
 # Lisp
 
-Lo scopo di questo progetto é stato quello di creare un parser uri che potesse prendere in input un uri, come strina, e dividerlo nelle sue parti secondo un modello semplificato della specifica [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986). In particolare l'uri puó essere scomposto in:
+The purpose of this project was to create a URI parser that could take a URI as input, as a string, and divide it into its parts according to a simplified model of the [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986) specification. Specifically, the URI can be decomposed into:
 
 - Scheme
 - Userinfo
@@ -10,21 +10,21 @@ Lo scopo di questo progetto é stato quello di creare un parser uri che potesse 
 - Query
 - Fragment
 
-La funzione che esegue il parsing e il controllo della grammatica é `uri-parse` puó essere chiamata nel seguente modo:
+The function that performs the parsing and grammar checking is `uri-parse`, which can be called as follows:
 
 ```
 CL prompt> (defparameter disco (uri-parse ”http://disco.unimib.it”))
 DISCO
 ```
 
-Tramite i metodi appositi si puó stampare a video la parte dell'uri desiderata:
+Using the appropriate methods, you can print the desired part of the URI to the screen:
 
 ```
 CL prompt> (uri-scheme disco)
 ”http”
 ```
 
-Inoltre per una maggiore leggibilitá é stato implementato il metodo `uri-display`come segue:
+Additionally, for better readability, the `uri-display` method was implemented as follows:
 
 ```
 CL prompt> (uri-display disco)
@@ -37,7 +37,7 @@ Query: NIL
 Fragment: NIL
 ```
 
-Nel caso si voglia salvare il risultato in un file:
+If you want to save the result to a file:
 
 ```
 ES

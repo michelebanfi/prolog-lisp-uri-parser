@@ -1,6 +1,6 @@
 # Prolog
 
-Lo scopo di questo progetto é stato quello di creare un parser uri che potesse prendere in input un uri, come strina, e dividerlo nelle sue parti secondo un modello semplificato della specifica [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986). In particolare l'uri puó essere scomposto in:
+The purpose of this project was to create a URI parser that could take a URI as input, as a string, and divide it into its parts according to a simplified model of the [rfc3986](https://datatracker.ietf.org/doc/html/rfc3986) specification. Specifically, the URI can be decomposed into:
 
 - Scheme
 - Userinfo
@@ -10,14 +10,14 @@ Lo scopo di questo progetto é stato quello di creare un parser uri che potesse 
 - Query
 - Fragment
 
-La funzione che esegue il parsing e il controllo della grammatica é `uri_parse` puó essere chiamata nel seguente modo:
+The function that performs the parsing and grammar checking is `uri_parse`, which can be called as follows:
 
 ```
 ?- uri_parse(”http://disco.unimib.it”, URI).
 URI = uri(http, [], ’disco.unimib.it’, 80, [], [], [])
 ```
 
-Invece per interrogare la struttura:
+To query the structure:
 
 ```
 ?- uri_parse(”http://disco.unimib.it”,
@@ -28,15 +28,13 @@ No
 Host = ’disco.unimib.it’
 ```
 
-Come nell'esempio sopra mostrato la struttura é la seguente:
+As shown in the example above, the structure is as follows:
 
 ```
 URI = uri(Scheme, Userinfo, Host, Port, Path, Query, Fragment).
 ```
 
-Infine si puó mostrare i risultati tramite: `uri_display/1` e `uri_display/2`
-
-usati nel seguente modo:
+Finally, the results can be displayed using: `uri_display/1` e `uri_display/2`, used as follows:
 
 ```
 ?-uri_parse("https://michele@disco.unimib:8080/folder/b?search=ciao#frag", URI), uri_display(URI).
@@ -51,7 +49,7 @@ Fragment:frag
 URI = uri(https, michele, 'disco.unimib', '8080', 'folder/b', 'search=ciao', frag).
 ```
 
-invece con `uri_display/2` si puó stampare su file cosi:
+With `uri_display/2`, you can print to a file as follows:
 
 ```
 ?- open('otuput.txt', write, Stream), uri_parse("https://michele@disco.unimib:8080/folder/b?search=ciao#frag", URI), uri_display(URI, Stream).

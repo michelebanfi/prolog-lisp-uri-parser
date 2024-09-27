@@ -1,5 +1,7 @@
 # Uri parser in prolog
 
+This project is an implementation of a uri parser written in Lisp and Prolog, follows the usage:
+
 `uri_parse/2`
 
 ```
